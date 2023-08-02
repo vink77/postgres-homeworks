@@ -19,7 +19,6 @@ def main() -> None:
                         next(file_reader)
                         cur.executemany(f"INSERT INTO {key} VALUES({val})", file_reader)
     finally:
-        conn.commit()
         conn.close()
 if __name__ == '__main__':
     main()
