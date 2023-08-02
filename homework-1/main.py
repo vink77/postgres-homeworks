@@ -8,26 +8,18 @@ def main() -> None:
     user = 'postgres',
     password = '9877'
     )
-    cur = conn.cursor()
 
-    # Считывание данных из CSV файла
-    with open("north_data/customers_data.csv", encoding='utf-8') as r_file:
-        # Создаем объект reader, указываем символ-разделитель ","
-        file_reader = csv.reader(r_file, delimiter=",")
-        cur.executemany("INSERT INTO customers VALUES (%s, %s, %s)", file_reader)
-        cur.execute("SELECT * FROM customers")
+    file_str = [('customers',"%s, %s, %s"), ("employees", "%s, %s, %s, %s, %s, %s"),("orders","%s, %s, %s, %s, %s")]
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                for key, val in file_str:
+                    with open(f"north_data\{key}_data.csv", encoding='utf-8') as r_file:
+                        file_reader = csv.reader(r_file, delimiter=",")
+                        next(file_reader)
+                        cur.executemany(f"INSERT INTO {key} VALUES({val})", file_reader)
+    finally:
         conn.commit()
-        rows = cur.fetchall()
-        for row in rows:
-            print(row)
-        print(len((rows)))
-
-    cur.close()
-    conn.close()
-
-
+        conn.close()
 if __name__ == '__main__':
     main()
-
-
-
